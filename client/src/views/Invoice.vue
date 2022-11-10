@@ -19,20 +19,26 @@ export default {
 <template>
   <div class="flex justify-center mt-9">
     <div class="overflow-x-auto relative shadow-lg sm:rounded-lg mb-10 w-7/12">
-      <table
-        class="w-full text-sm bg-white text-left text-gray-500 dark:text-gray-400"
-      >
+      <table class="w-full text-sm bg-white text-left">
         <div
-          v-if="invoice.Invoices[0].length !== 0"
+          v-if="invoice.Invoices[invoice.Invoices.length - 1].length !== 0"
           class="mx-auto p-16"
           style="max-width: 800px"
         >
           <div class="flex items-center justify-between mb-8 px-3">
             <div>
-              <p>{{ invoice.Invoices[0].isPay }}</p>
+              <p class="text-red-500 font-bold">
+                {{ invoice.Invoices[invoice.Invoices.length - 1].isPay }}
+              </p>
               <span class="text-2xl">Invoice #</span>:
-              {{ invoice.Invoices[0].token_payment }}<br />
-              <span>Date</span>: {{ invoice.Invoices[0].createdAt.slice(0, 10)
+              {{ invoice.Invoices[invoice.Invoices.length - 1].token_payment
+              }}<br />
+              <span>Date</span>:
+              {{
+                invoice.Invoices[invoice.Invoices.length - 1].createdAt.slice(
+                  0,
+                  10
+                )
               }}<br />
             </div>
             <div class="text-right">
@@ -68,7 +74,8 @@ export default {
           </div>
 
           <div
-            v-for="product in invoice.Invoices[0].information"
+            v-for="product in invoice.Invoices[invoice.Invoices.length - 1]
+              .information"
             class="flex justify-between mb-4 bg-gray-200 px-3 py-2"
           >
             <div>{{ product.productName }}</div>
@@ -79,7 +86,7 @@ export default {
             <div>Ongkir</div>
             <!-- <div>{{ product.quantity }} x</div> -->
             <div class="text-right font-medium">
-              Rp, {{ invoice.Invoices[0].ongkir }}
+              Rp, {{ invoice.Invoices[invoice.Invoices.length - 1].ongkir }}
             </div>
           </div>
 
@@ -89,7 +96,10 @@ export default {
             </div>
             <div class="text-2xl text-right font-medium">
               Rp,
-              {{ invoice.Invoices[0].totalPrice + invoice.Invoices[0].ongkir }}
+              {{
+                invoice.Invoices[invoice.Invoices.length - 1].totalPrice +
+                invoice.Invoices[invoice.Invoices.length - 1].ongkir
+              }}
             </div>
           </div>
 
@@ -104,8 +114,8 @@ export default {
             <a
               @click.prevent="
                 checkSnap(
-                  invoice.Invoices[0].token_payment,
-                  invoice.Invoices[0].id
+                  invoice.Invoices[invoice.Invoices.length - 1].token_payment,
+                  invoice.Invoices[invoice.Invoices.length - 1].id
                 )
               "
               class="p-3 w-3/12 text-center border-none border-slate-300 rounded-sm mt-3 text-neutral-50 bg-orange-500 hover:bg-orange-600"

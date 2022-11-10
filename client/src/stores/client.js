@@ -99,11 +99,13 @@ export const useClientStore = defineStore("client", {
           }
         );
         console.log(data);
+        // this.sweetAlert("success", "Berhasil ditambah di Cart");
         console.log("berhasil tambah dari cart");
         this.fetchProductInCart();
         this.router.push({ name: "cart" });
       } catch (err) {
         console.log(err);
+        this.sweetAlert("error", "gagal ditambah di Cart");
       }
     },
     async addQuantity(quantity, ProductId) {
@@ -118,11 +120,14 @@ export const useClientStore = defineStore("client", {
           }
         );
         console.log(data);
+        this.sweetAlert("success", "Berhasil ditambah di Cart");
 
         console.log("berhasil tambah dari dashboard");
         // this.fetchProductInCart();
         // this.router.push({ name: "cart" });
       } catch (err) {
+        this.sweetAlert("error", "Gagal ditambah di Cart");
+
         console.log(err);
       }
     },
@@ -148,11 +153,16 @@ export const useClientStore = defineStore("client", {
       }
     },
     async deleteFromCart(ProductId) {
-      const { data } = await axios.delete("/cart/" + ProductId, {
-        headers: { access_token: localStorage.getItem("access_token") },
-      });
-      console.log(data);
-      console.log("berhasil dihapus");
+      try {
+        const { data } = await axios.delete(`/cart/${ProductId}`, {
+          headers: { access_token: localStorage.getItem("access_token") },
+        });
+        console.log(data);
+        console.log("berhasil dihapus");
+        this.sweetAlert("success", "Berhasil di hapus di Cart");
+      } catch (error) {
+        this.sweetAlert("error", "Gagal hapus di Cart");
+      }
     },
     async logout() {
       localStorage.clear();
@@ -183,9 +193,9 @@ export const useClientStore = defineStore("client", {
       console.log(data);
       console.log("dapet nih");
     },
-    async payment() {
+    async payment(gross_amount) {
       // const order_id = `ORDER_1-${new Date()}`;
-      const gross_amount = 1000;
+      // const gross_amount = 1000;
       // console.log(order_id);
       const { data } = await axios.post(
         "/payment",
@@ -200,21 +210,27 @@ export const useClientStore = defineStore("client", {
       return data;
     },
 
-    async addInvoice(ongkir) {
-      console.log(ongkir);
-      const dataPayment = await this.payment();
-      console.log(dataPayment);
-      const { data } = await axios.post(
-        "/invoice",
-        {
-          ongkir,
-          url_payment: dataPayment.redirect_url,
-          token_payment: dataPayment.token,
-        },
-        {
-          headers: { access_token: localStorage.getItem("access_token") },
-        }
-      );
+    async addInvoice(ongkir, gross_amount) {
+      try {
+        console.log(ongkir);
+        const dataPayment = await this.payment(gross_amount);
+        console.log(dataPayment);
+        const { data } = await axios.post(
+          "/invoice",
+          {
+            ongkir,
+            url_payment: dataPayment.redirect_url,
+            token_payment: dataPayment.token,
+          },
+          {
+            headers: { access_token: localStorage.getItem("access_token") },
+          }
+        );
+        this.router.push({ name: "invoice" });
+        this.sweetAlert("success", "Invoice berhasil di buat");
+      } catch (error) {
+        // this.sweetAlert('error','Gagal ditambah di Cart')
+      }
     },
     async getInvoice() {
       const { data } = await axios.get("/invoice", {

@@ -172,16 +172,20 @@ export default {
     <!-- card chekout -->
     <div class="w-full sticky bottom-0 bg-white">
       <div
-        class="border rounded overflow-hidden flex flex-row justify-between h-6/12 p-4"
+        class="border rounded overflow-hidden flex flex-row justify-between h-6/12 p-4 justify-center items-center text-center"
       >
-        <h1>Total Harga</h1>
-        <div class="flex flex-row w-3/12">
-          <p class="justify-center items-center text-center">
-            Rp.{{ totalAllPriceInCart + ongkir }}
-          </p>
+        <div>
+          <h1>Total Harga</h1>
+        </div>
+        <div
+          class="flex flex-row w-3/12 justify-center items-center text-center"
+        >
+          <div class="">
+            <p class="">Rp.{{ totalAllPriceInCart + ongkir }}</p>
+          </div>
           <button
-            @click.prevent="addInvoice(ongkir)"
-            class="p-3 w-full border-none border-slate-300 rounded-sm mt-3 text-neutral-50 bg-orange-500 hover:bg-orange-600"
+            @click.prevent="addInvoice(ongkir, totalAllPriceInCart + ongkir)"
+            class="p-3 w-full border-none border-slate-300 rounded-sm mt-3 text-neutral-50 bg-orange-500 hover:bg-orange-600 ml-4"
           >
             Checkout
           </button>
