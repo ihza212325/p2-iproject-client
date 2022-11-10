@@ -1,7 +1,7 @@
 <script>
 import { mapState, mapActions } from "pinia";
-import Card from "../components/Card.vue";
 import { useClientStore } from "../stores/client";
+import Card from "../components/Card.vue";
 // import Cart from "./Cart.vue";
 export default {
   name: "dashboard",

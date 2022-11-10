@@ -9,6 +9,9 @@ export const useClientStore = defineStore("client", {
       datasInCart: [],
       totalAllPriceInCart: 0,
       totalProductInCart: 0,
+      Allcity: [],
+      ongkir: 0,
+      invoice: {},
     };
   },
   actions: {
@@ -145,16 +148,107 @@ export const useClientStore = defineStore("client", {
       }
     },
     async deleteFromCart(ProductId) {
-      const { data } = await axios.post("/login", {
-        email,
-        password,
+      const { data } = await axios.delete("/cart/" + ProductId, {
+        headers: { access_token: localStorage.getItem("access_token") },
       });
+      console.log(data);
+      console.log("berhasil dihapus");
     },
     async logout() {
       localStorage.clear();
       this.isLogin = false;
       this.router.push({ name: "login" });
       this.sweetAlert("success", `Log Out Successfully`);
+    },
+    async fetchCity() {
+      const { data } = await axios.get("/city", {
+        headers: { access_token: localStorage.getItem("access_token") },
+      });
+      this.Allcity = data;
+      // this.checkOngkir(114);
+      console.log(data);
+    },
+    async checkOngkir(destination) {
+      const origin = 489;
+      const weight = 1000;
+      const courier = "jne";
+      const { data } = await axios.post(
+        "/cost",
+        { origin, destination, weight, courier },
+        {
+          headers: { access_token: localStorage.getItem("access_token") },
+        }
+      );
+      this.ongkir = data;
+      console.log(data);
+      console.log("dapet nih");
+    },
+    async payment() {
+      // const order_id = `ORDER_1-${new Date()}`;
+      const gross_amount = 1000;
+      // console.log(order_id);
+      const { data } = await axios.post(
+        "/payment",
+        {
+          gross_amount,
+        },
+        {
+          headers: { access_token: localStorage.getItem("access_token") },
+        }
+      );
+      // console.log(data);
+      return data;
+    },
+
+    async addInvoice(ongkir) {
+      console.log(ongkir);
+      const dataPayment = await this.payment();
+      console.log(dataPayment);
+      const { data } = await axios.post(
+        "/invoice",
+        {
+          ongkir,
+          url_payment: dataPayment.redirect_url,
+          token_payment: dataPayment.token,
+        },
+        {
+          headers: { access_token: localStorage.getItem("access_token") },
+        }
+      );
+    },
+    async getInvoice() {
+      const { data } = await axios.get("/invoice", {
+        headers: { access_token: localStorage.getItem("access_token") },
+      });
+      this.invoice = data;
+    },
+    async checkSnap(snapToken, invoiceId) {
+      snap.pay(snapToken, {
+        onSuccess: async function (result) {
+          console.log("success");
+          console.log(result);
+          await axios.post(
+            `invoice/${invoiceId}`,
+            {},
+            {
+              headers: { access_token: localStorage.getItem("access_token") },
+            }
+          );
+        },
+        onPending: function (result) {
+          console.log("pending");
+          console.log(result);
+        },
+        onError: function (result) {
+          console.log("error");
+          console.log(result);
+        },
+        onClose: function () {
+          console.log(
+            "customer closed the popup without finishing the payment"
+          );
+        },
+      });
     },
   },
 });

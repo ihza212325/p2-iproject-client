@@ -6,6 +6,8 @@ import Dashboard from "../views/Dashboard.vue";
 import Login from "../views/Login.vue";
 import Register from "../views/Register.vue";
 import Cart from "../views/Cart.vue";
+import Invoice from "../views/Invoice.vue";
+// import Shipment from "../views/Shipment.vue";
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -28,6 +30,11 @@ const router = createRouter({
       path: "/cart",
       name: "cart",
       component: Cart,
+    },
+    {
+      path: "/invoice",
+      name: "invoice",
+      component: Invoice,
     },
   ],
 });

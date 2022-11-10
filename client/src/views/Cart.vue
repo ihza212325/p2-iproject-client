@@ -7,19 +7,32 @@ export default {
   name: "Cart",
   data() {
     return {
-      // totalPriceAll: 0,
-      totalPriceInCart: 0,
+      selectedCity: "",
     };
   },
   components: { Card },
   computed: {
-    ...mapState(useClientStore, ["datasInCart", "totalAllPriceInCart"]),
+    ...mapState(useClientStore, [
+      "datasInCart",
+      "totalAllPriceInCart",
+      "Allcity",
+      "ongkir",
+    ]),
   },
   methods: {
-    ...mapActions(useClientStore, ["fetchProductInCart", "updateQuantity"]),
+    ...mapActions(useClientStore, [
+      "fetchProductInCart",
+      "updateQuantity",
+      "deleteFromCart",
+      "fetchCity",
+      "checkOngkir",
+      "payment",
+      "addInvoice",
+    ]),
   },
   async created() {
     await this.fetchProductInCart();
+    await this.fetchCity();
   },
 };
 </script>
@@ -27,6 +40,61 @@ export default {
 <template>
   <section id="dashboard" class="p-8 bg-gray-100 w-100">
     <h1>CART</h1>
+    <div class="overflow-x-auto relative shadow-md sm:rounded-lg mb-10">
+      <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+        <thead
+          class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+        >
+          <tr>
+            <th scope="col" class="py-3 px-6">
+              <label
+                for="countries"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400"
+                >Pilih Kota</label
+              >
+              <select
+                id="countries"
+                v-model="selectedCity"
+                @click.prevent="checkOngkir(selectedCity)"
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              >
+                <option selected>Choose a country</option>
+                <option :value="city.city_id" v-for="city in Allcity">
+                  {{ city.city_name }}
+                </option>
+              </select>
+            </th>
+            <th scope="col" class="py-3 px-6">
+              <label
+                for="countries"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400"
+                >Dari</label
+              >
+            </th>
+            <th scope="col" class="py-3 px-6">
+              <label
+                for="countries"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400"
+                >Ke</label
+              >
+            </th>
+            <th scope="col" class="py-3 px-6">
+              <label
+                for="countries"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400"
+                >Ongkir</label
+              >
+              <label
+                for="countries"
+                class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400"
+                >{{ ongkir }}</label
+              >
+            </th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+    <!-- dsa -->
     <div class="overflow-x-auto relative shadow-md sm:rounded-lg">
       <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
         <thead
@@ -79,6 +147,7 @@ export default {
             </td>
             <td class="py-4 px-6">
               <a
+                @click.prevent="deleteFromCart(data.id)"
                 href="#"
                 class="font-medium text-red-600 dark:text-blue-500 hover:underline"
               >
@@ -100,6 +169,7 @@ export default {
         </tbody>
       </table>
     </div>
+    <!-- card chekout -->
     <div class="w-full sticky bottom-0 bg-white">
       <div
         class="border rounded overflow-hidden flex flex-row justify-between h-6/12 p-4"
@@ -107,9 +177,10 @@ export default {
         <h1>Total Harga</h1>
         <div class="flex flex-row w-3/12">
           <p class="justify-center items-center text-center">
-            Rp.{{ totalAllPriceInCart }}
+            Rp.{{ totalAllPriceInCart + ongkir }}
           </p>
           <button
+            @click.prevent="addInvoice(ongkir)"
             class="p-3 w-full border-none border-slate-300 rounded-sm mt-3 text-neutral-50 bg-orange-500 hover:bg-orange-600"
           >
             Checkout
