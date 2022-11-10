@@ -68,8 +68,7 @@ export default {
       <button
         class="text-white p-5 bg-red-500 hover:bg-red-800 ease-out duration-300"
         v-for="product in products.totalPage"
-        :key="item"
-        @click.prevent="fetchDataProduct(item, this.$route.query.search)"
+        @click.prevent="fetchDataProduct(product, this.$route.query.search)"
       >
         {{ product }}
       </button>
